@@ -10,7 +10,7 @@ the right set of repos at the right tag:
 ```sh
 git clone https://github.com/rahulpnath/tilt-series
 cd tilt-series
-./bootstrap.sh v3-start
+./bootstrap.sh v3-end
 ```
 
 ## At `v3-start`
@@ -29,7 +29,32 @@ docker compose -f docker/compose.yaml up
 curl http://localhost:5102/orders
 ```
 
-### It cannot see Catalog, and that's the point
+### It can see Catalog now
+
+`orders-api` joins `shopnet`, the external network Catalog also joins, so the
+name finally resolves:
+
+```sh
+docker network create shopnet          # once, outside any project
+
+curl http://localhost:5102/catalog-check
+# {"reached":"http://catalog-api:5101","ok":true,"products":"[...]"}
+```
+
+```sh
+docker exec <orders-api> getent hosts catalog-api
+# 172.21.0.2   catalog-api
+```
+
+`getent`, not `ping` — most images don't ship `ping`.
+
+Note the `networks:` list on `orders-api` includes `default` as well as
+`shopnet`. Naming any network at all turns off the automatic one, and without
+`default` this container would lose its own SQL Server and RabbitMQ.
+
+---
+
+### Earlier: what `v3-start` looked like
 
 `orders-api` wants to call `catalog-api`, server-side, by name:
 
@@ -49,7 +74,7 @@ Catalog is running. It's just running in a **different compose project**, which
 means a different network, and Docker's DNS is per network. Nothing is broken —
 these two were never introduced.
 
-That's Video 3.
+That was the wall Video 3 opens on.
 
 ### Why this repo publishes fewer ports than Catalog
 

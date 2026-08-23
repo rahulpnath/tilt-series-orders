@@ -1,5 +1,5 @@
-# Orders: its own repo, its own compose file, its own project — and no shared
-# network, so nothing here can reach catalog-api by name.
+# Orders: its own repo, its own compose file, its own project. `shopnet` is the
+# one thing it shares with Catalog.
 
 name: shop-orders
 
@@ -17,6 +17,10 @@ services:
       Rabbit__Url: "amqp://shop:shop@rabbitmq"
     volumes:
       - ../src:/src
+    networks:
+      # Naming any network switches off the automatic `default`, so list it too.
+      - default
+      - shopnet
     depends_on:
       sqlserver:
         condition: service_healthy
@@ -58,6 +62,12 @@ services:
       RABBITMQ_DEFAULT_USER: shop
       RABBITMQ_DEFAULT_PASS: shop
     # No management UI: Catalog's compose already binds 15672 on your machine.
+
+networks:
+  default: {}
+  # The external network Catalog also joins, so `catalog-api` resolves from here.
+  shopnet:
+    external: true
 
 volumes:
   sql-data:
