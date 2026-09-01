@@ -10,10 +10,29 @@ the right set of repos at the right tag:
 ```sh
 git clone https://github.com/rahulpnath/tilt-series
 cd tilt-series
-./bootstrap.sh v3-end
+./bootstrap.sh v4-end
 ```
 
-## At `v3-start`
+## At `v4-end`
+
+A `Tiltfile`, and nothing else. `compose.yaml` is untouched.
+
+```sh
+tilt up          # from this folder — Orders on its own
+```
+
+`project_name='shop-orders'` keeps this a separate compose project even when the
+workspace Tiltfile loads all four repos at once, and `new_name=` on `sqlserver`
+and `rabbitmq` avoids colliding with Catalog's services of the same name — Tilt
+resource names are global, compose service names are not.
+`main/Shop.Catalog/README.md` has the long version of both.
+
+`v4-start` did not change this repo — its tag points at the same commit as
+`v3-end`.
+
+---
+
+## Earlier: `v3-start` and `v3-end`
 
 | | |
 |---|---|
