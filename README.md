@@ -10,10 +10,10 @@ the right set of repos at the right tag:
 ```sh
 git clone https://github.com/rahulpnath/tilt-series
 cd tilt-series
-./bootstrap.sh v3-start
+./bootstrap.sh v3-end
 ```
 
-## At `v3-start`
+## At `v3-end`
 
 The second app repo, in the same shape as `Shop.Catalog`: an API on `:5102`, a worker, a
 `Contracts` project for the message they share. `POST /orders` asks Catalog for the product,
@@ -21,13 +21,16 @@ saves the order with its name and price, and publishes `OrderPlaced`; the worker
 
 There is no SQL Server or RabbitMQ in `compose.yaml` — both come from the workspace's
 **`infra/`** project, on a network named `shopnet` that the API and worker join. Catalog's
-address is set the same way, by name:
+address is set by name:
 
 ```yaml
 Catalog__Url: "http://catalog-api:5101"
 ```
 
-At this tag that name does not resolve. Video 3 is about why, and what to call things instead.
+That name resolves now — video 3 gave Catalog's API the alias on `shopnet`. This API has one
+too, **`orders-api`**, so the two compose files read the same and a name is ready for whatever
+calls Orders next. Both APIs also carry a dev-only **CORS policy**, so the Storefront can call
+them from the browser.
 
 ### Running it
 
@@ -49,12 +52,16 @@ curl -X POST http://localhost:5102/orders \
 ```
 
 ```
-System.Net.Http.HttpRequestException: Name or service not known (catalog-api:5101)
+{"id":1,"productId":1,"productName":"Pour Over Kettle","unitPrice":119.00,"quantity":2}
+```
+
+```
+worker-1  |  🧾 order.placed — #1 Pour Over Kettle x2
 ```
 
 ```
 Shop.Orders/
-├── compose.yaml                  # api + worker, on `default` and `shopnet`
+├── compose.yaml                  # api + worker on `default` and `shopnet`; alias `orders-api`
 ├── .env                          # you create this; gitignored
 ├── orders-api.dev.Dockerfile     # sdk:10.0 + watch
 ├── orders-worker.dev.Dockerfile

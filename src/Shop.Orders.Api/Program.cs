@@ -17,7 +17,12 @@ builder.Services.AddRebus(rebus => rebus
 builder.Services.AddHttpClient("catalog", http =>
     http.BaseAddress = new Uri(builder.Configuration["Catalog:Url"]!));
 
+builder.Services.AddCors(o => o.AddDefaultPolicy(p =>
+    p.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
+
 var app = builder.Build();
+
+app.UseCors();
 
 await DbBootstrap.EnsureCreatedAsync(app.Services, app.Logger);
 

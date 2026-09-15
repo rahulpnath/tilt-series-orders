@@ -14,8 +14,10 @@ services:
     volumes:
       - ./src:/src
     networks:
-      - default
-      - shopnet
+      default:
+      shopnet:
+        aliases:
+          - orders-api
 
   worker:
     build:
