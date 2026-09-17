@@ -5,8 +5,6 @@ services:
     build:
       context: .
       dockerfile: orders-api.dev.Dockerfile
-    ports:
-      - "5102:5102"
     environment:
       ConnectionStrings__Db: "Server=sqlserver,1433;Database=ShopOrders;User Id=sa;Password=${SA_PASSWORD};TrustServerCertificate=True;Encrypt=False"
       Rabbit__Url: "amqp://shop:shop@rabbitmq"

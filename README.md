@@ -10,10 +10,26 @@ the right set of repos at the right tag:
 ```sh
 git clone https://github.com/rahulpnath/tilt-series
 cd tilt-series
-./bootstrap.sh v4-end
+./bootstrap.sh v5-end
 ```
 
-## At `v4-end`
+## At `v5-end`
+
+`ports:` is gone from `compose.yaml`, and the `Tiltfile` gains `links=['https://orders.localhost/orders']`.
+Nothing else changed.
+
+The API is reached at **https://orders.localhost** through **Caddy** — the workspace's `caddy/`
+project, a container on `shopnet` that forwards to the alias **`orders-api:5102`**. The alias from video 3 finally has its caller.
+
+Nothing outside Docker needs this API's door any more: the browser goes through Caddy, and
+nothing else ever used the port. The CORS policy in `Program.cs` stays — the Storefront is `storefront.localhost` and this
+API is `orders.localhost`, different origins, as they will be when deployed.
+
+```sh
+curl https://orders.localhost/orders        # after trusting Caddy's root (workspace README), or add -k
+```
+
+## Earlier: `v4-end`
 
 A `Tiltfile`, and nothing else. `compose.yaml` is untouched.
 
@@ -79,7 +95,7 @@ worker-1  |  🧾 order.placed — #1 Pour Over Kettle x2
 
 ```
 Shop.Orders/
-├── compose.yaml                  # api + worker on `default` and `shopnet`; alias `orders-api`
+├── compose.yaml                  # api + worker on `default` and `shopnet`; alias `orders-api`; no ports
 ├── .env                          # you create this; gitignored
 ├── orders-api.dev.Dockerfile     # sdk:10.0 + watch
 ├── orders-worker.dev.Dockerfile
