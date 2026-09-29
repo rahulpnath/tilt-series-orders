@@ -39,7 +39,8 @@ app.MapPost("/orders", async (PlaceOrder request, OrdersDbContext db, IBus bus, 
     var product = await catalog.GetFromJsonAsync<Product>($"/products/{request.ProductId}")
         ?? throw new InvalidOperationException($"Catalog has no product #{request.ProductId}");
 
-    var order = new Order(0, product.Id, product.Name, product.Price, request.Quantity);
+    var price = Math.Round(product.Price * 0.9m, 2);
+    var order = new Order(0, product.Id, product.Name, price, request.Quantity);
     db.Orders.Add(order);
     await db.SaveChangesAsync();
 
