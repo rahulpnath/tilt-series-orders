@@ -3,14 +3,14 @@ name: shop-orders
 services:
   orders-api:
     build:
-      context: ${ORDERS_DIR:-.}
+      context: .
       dockerfile: orders-api.dev.Dockerfile
     environment:
       ConnectionStrings__Db: "Server=sqlserver,1433;Database=ShopOrders;User Id=sa;Password=${SA_PASSWORD};TrustServerCertificate=True;Encrypt=False"
       Rabbit__Url: "amqp://shop:shop@rabbitmq"
       Catalog__Url: "http://catalog-api:5101"
     volumes:
-      - ${ORDERS_DIR:-.}/src:/src
+      - ./src:/src
     networks:
       default:
       shopnet:
@@ -19,12 +19,12 @@ services:
 
   orders-worker:
     build:
-      context: ${ORDERS_DIR:-.}
+      context: .
       dockerfile: orders-worker.dev.Dockerfile
     environment:
       Rabbit__Url: "amqp://shop:shop@rabbitmq"
     volumes:
-      - ${ORDERS_DIR:-.}/src:/src
+      - ./src:/src
 
 # Caddy's network; it reaches the API by its alias.
 networks:
