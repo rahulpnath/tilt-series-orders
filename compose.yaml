@@ -15,7 +15,7 @@ services:
       default:
       shopnet:
         aliases:
-          - orders-api
+          - orders-api-${FOLDER:-main}
 
   orders-worker:
     build:
