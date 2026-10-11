@@ -10,10 +10,37 @@ the right set of repos at the right tag:
 ```sh
 git clone https://github.com/rahulpnath/tilt-series
 cd tilt-series
-./bootstrap.sh v5-end
+./bootstrap.sh v6-end
 ```
 
-## At `v5-end`
+## At `v6-end`
+
+Two videos changed this repo.
+
+**Docker Compose Include** (`v5.2-end`) — the services are `orders-api` and `orders-worker`, so the
+workspace can `include` this file into one compose project with the other repos. The worker left
+`shopnet`; it finds infra on the project's own network. The `Tiltfile` lost `docker_compose()` and
+`new_name=`: the workspace loads this compose file through its `include`, and this `Tiltfile`
+keeps only the labels and the link.
+
+**Parallel Worktree Environments** (`v6-end`) — the API's `shopnet` alias is
+`orders-api-${FOLDER:-main}`, and the Tilt link is `https://orders-<folder>.localhost/orders`.
+`FOLDER` is the workspace folder being run, passed on by the workspace `Tiltfile`; it falls back
+to `main`. `Catalog__Url` stays `http://catalog-api:5101` — it resolves on the folder's own
+network, so each copy's Orders reaches its own Catalog.
+
+The **`feature-pricing`** branch is the series' example feature: it takes 10% off every order.
+Check it out as a worktree under the workspace's `feature-pricing/` folder (workspace README).
+
+This repo no longer runs on its own: its database and message broker come from the workspace's
+infra, inside each folder's project. Run it from the workspace (`tilt up`, or `tilt up <folder>`).
+Every worktree of this repo needs its own `.env` (`SA_PASSWORD`) — git doesn't copy ignored files.
+
+```sh
+curl https://orders-main.localhost/orders
+```
+
+## Earlier: `v5-end`
 
 `ports:` is gone from `compose.yaml`, and the `Tiltfile` gains `links=['https://orders.localhost/orders']`.
 Nothing else changed.
